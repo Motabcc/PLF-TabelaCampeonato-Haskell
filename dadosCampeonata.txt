@@ -22,10 +22,19 @@ data Linha = Linha
   } deriving (Show, Eq)
 
 participou :: Time -> Partida -> Bool
-participou = undefined          
+participou t part = t == mandante part  ||  t == visitante part        
 
+resultadoDoPlacar :: Int -> Int -> Resultado
+resultadoDoPlacar meus deles
+  | meus > deles = Vitoria
+  | meus < deles = Derrota
+  | otherwise    = Empate
+  
 resultadoPara :: Time -> Partida -> Maybe Resultado
-resultadoPara = undefined       
+resultadoPara t part
+  | t == mandante part  = Just (resultadoDoPlacar (golsMandante part) (golsVisitante part))
+  | t == visitante part = Just (resultadoDoPlacar (golsVisitante part) (golsMandante part))
+  | otherwise           = Nothing
 
 times :: [Partida] -> [Time]
 times = undefined               
