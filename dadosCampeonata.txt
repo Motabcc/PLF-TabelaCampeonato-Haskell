@@ -1,0 +1,39 @@
+type Time = String
+
+data Resultado = Vitoria | Empate | Derrota   -- data cria um tipo novo
+  deriving (Show, Eq)                         -- Show: print funciona; Eq: == funciona
+
+data Partida = Partida
+  { rodada        :: Int
+  , mandante      :: Time
+  , golsMandante  :: Int
+  , golsVisitante :: Int
+  , visitante     :: Time
+  } deriving (Show, Eq)
+
+data Linha = Linha
+  { time       :: Time    
+  , jogos      :: Int      
+  , vitorias   :: Int
+  , empates    :: Int
+  , derrotas   :: Int
+  , golsPro    :: Int
+  , golsContra :: Int
+  } deriving (Show, Eq)
+
+participou :: Time -> Partida -> Bool
+participou = undefined          
+
+resultadoPara :: Time -> Partida -> Maybe Resultado
+resultadoPara = undefined       
+
+times :: [Partida] -> [Time]
+times = undefined               
+
+exemplo :: Partida
+exemplo = Partida 1 "Coritiba" 2 1 "Athletico"
+
+main :: IO ()
+main = do
+  print (Vitoria == Empate)
+  print exemplo
