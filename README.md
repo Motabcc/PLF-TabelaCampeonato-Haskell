@@ -1,0 +1,1 @@
+# PLF-TabelaCampeonato-Haskell
