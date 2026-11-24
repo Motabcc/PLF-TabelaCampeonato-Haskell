@@ -150,6 +150,12 @@ maiorGoleada [] = Nothing
 maiorGoleada ps = Just (last (sortOn diferenca ps))
   where
     diferenca p = abs (golsMandante p - golsVisitante p)
+    
+mediaGols :: [Partida] -> Maybe Double
+mediaGols [] = Nothing
+mediaGols ps = Just (fromIntegral totalGols / fromIntegral (length ps))
+  where
+    totalGols = sum (map (\p -> golsMandante p + golsVisitante p) ps)
 
 main :: IO ()
 main = do
@@ -172,6 +178,8 @@ main = do
   mapM_ print (classificacao campeonato)
   mapM_ print (ateRodada 2 campeonato)
   print (maiorGoleada campeonato)
+  print (mediaGols campeonato)
+  
 
   
   
