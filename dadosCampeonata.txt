@@ -1,4 +1,4 @@
-import Data.List (nub, sort, foldl)
+import Data.List (nub, sort, foldl, sortOn)
 
 -- camada 3.1 tipos
 
@@ -105,7 +105,7 @@ ehDerrota Derrota = 1
 ehDerrota _       = 0
 
 linhaDoTime :: [Partida] -> Time -> Linha
-linhaDoTime ps t = foldl' atualizar linhaVazia (filter (participou t) ps)
+linhaDoTime ps t = foldl atualizar linhaVazia (filter (participou t) ps)
   where
     linhaVazia = Linha t 0 0 0 0 0 0
 
@@ -135,6 +135,12 @@ aproveitamento l
       | otherwise    = fromIntegral (round (valor * 100)) / 100
       where
         valor = fromIntegral (pontosLinha l) / fromIntegral (jogos l * 3) * 100
+        
+classificacao :: [Partida] -> [Linha]
+classificacao ps = reverse (sortOn chave linhas)
+  where
+    linhas = map (linhaDoTime ps) (times ps)
+    chave l = (pontosLinha l, vitorias l, saldo l, golsPro l)
 
 main :: IO ()
 main = do
@@ -154,6 +160,7 @@ main = do
   print (saldo (linhaDoTime campeonato "TimeA"))
   print (pontosLinha (linhaDoTime campeonato "TimeA"))
   print (aproveitamento (linhaDoTime campeonato "TimeA"))
+  mapM_ print (classificacao campeonato)
 
   
   
