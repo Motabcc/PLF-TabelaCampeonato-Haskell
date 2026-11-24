@@ -122,7 +122,13 @@ linhaDoTime ps t = foldl' atualizar linhaVazia (filter (participou t) ps)
            , golsPro    = golsPro linha    + meusGols
            , golsContra = golsContra linha + golsAdversario
            }
-           
+
+pontosLinha :: Linha -> Int
+pontosLinha l = vitorias l * pontos Vitoria + empates l * pontos Empate
+
+saldo :: Linha -> Int
+saldo l = golsPro l - golsContra l
+
 main :: IO ()
 main = do
   -- testes da Camada 3.1
@@ -138,6 +144,8 @@ main = do
   
   -- testes da Camada 3.2
   print (linhaDoTime campeonato "TimeA")
+  print (saldo (linhaDoTime campeonato "TimeA"))
+  print (pontosLinha (linhaDoTime campeonato "TimeA"))
 
   
   
