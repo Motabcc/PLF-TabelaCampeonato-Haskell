@@ -141,6 +141,9 @@ classificacao ps = reverse (sortOn chave linhas)
   where
     linhas = map (linhaDoTime ps) (times ps)
     chave l = (pontosLinha l, vitorias l, saldo l, golsPro l)
+    
+ateRodada :: Int -> [Partida] -> [Partida] 
+ateRodada n ps = [p | p <- ps, rodada p <= n]
 
 main :: IO ()
 main = do
@@ -161,6 +164,7 @@ main = do
   print (pontosLinha (linhaDoTime campeonato "TimeA"))
   print (aproveitamento (linhaDoTime campeonato "TimeA"))
   mapM_ print (classificacao campeonato)
+  mapM_ print (ateRodada 2 campeonato)
 
   
   
