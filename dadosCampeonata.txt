@@ -129,6 +129,13 @@ pontosLinha l = vitorias l * pontos Vitoria + empates l * pontos Empate
 saldo :: Linha -> Int
 saldo l = golsPro l - golsContra l
 
+aproveitamento :: Linha -> Double
+aproveitamento l
+      | jogos l == 0 = 0
+      | otherwise    = fromIntegral (round (valor * 100)) / 100
+      where
+        valor = fromIntegral (pontosLinha l) / fromIntegral (jogos l * 3) * 100
+
 main :: IO ()
 main = do
   -- testes da Camada 3.1
@@ -146,6 +153,7 @@ main = do
   print (linhaDoTime campeonato "TimeA")
   print (saldo (linhaDoTime campeonato "TimeA"))
   print (pontosLinha (linhaDoTime campeonato "TimeA"))
+  print (aproveitamento (linhaDoTime campeonato "TimeA"))
 
   
   
