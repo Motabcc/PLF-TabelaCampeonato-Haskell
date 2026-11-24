@@ -1,4 +1,4 @@
-import Data.List (nub, sort)
+import Data.List (nub, sort, foldl)
 
 -- camada 3.1 tipos
 
@@ -83,15 +83,64 @@ campeonato =
   , Partida 5 "TimeD" 2 1 "TimeE"
   ]
 
+
+
+
+-- Camada 3.2
+pontos :: Resultado -> Int
+pontos Vitoria  = 3
+pontos Empate   = 1
+pontos Derrota  = 0
+
+ehVitoria :: Resultado -> Int
+ehVitoria Vitoria = 1
+ehVitoria _       = 0
+
+ehEmpate :: Resultado -> Int
+ehEmpate Empate = 1
+ehEmpate _      = 0
+
+ehDerrota  :: Resultado -> Int
+ehDerrota Derrota = 1
+ehDerrota _       = 0
+
+linhaDoTime :: [Partida] -> Time -> Linha
+linhaDoTime ps t = foldl' atualizar linhaVazia (filter (participou t) ps)
+  where
+    linhaVazia = Linha t 0 0 0 0 0 0
+
+    atualizar linha partida =
+      let (meusGols, golsAdversario)
+            | mandante partida == t = (golsMandante partida, golsVisitante partida)
+            | otherwise             = (golsVisitante partida, golsMandante partida)
+          resultado = resultadoDoPlacar meusGols golsAdversario
+      in linha
+           { jogos      = jogos linha + 1
+           , vitorias   = vitorias linha + ehVitoria resultado
+           , empates    = empates linha  + ehEmpate resultado
+           , derrotas   = derrotas linha + ehDerrota resultado
+           , golsPro    = golsPro linha    + meusGols
+           , golsContra = golsContra linha + golsAdversario
+           }
+           
 main :: IO ()
 main = do
-  -- testes da Camada 3.11
-  print (participou "Coritiba" exemplo)       
-  print (resultadoPara "Athletico" exemplo)   
-  print (resultadoPara "Paraná" exemplo)      
-  mapM_ putStrLn (times jogosTeste)          
-  print (Vitoria == Empate)                
-  print exemplo
-  -- campeonato
-  mapM_ putStrLn (times campeonato)           -- os 6 times
-  print (length campeonato)                   -- 15
+  -- testes da Camada 3.1
+  -- print (participou "Coritiba" exemplo)       
+  -- print (resultadoPara "Athletico" exemplo)   
+  -- print (resultadoPara "Paraná" exemplo)      
+  -- mapM_ putStrLn (times jogosTeste)          
+  -- print (Vitoria == Empate)                
+  -- print exemplo
+  -- -- campeonato
+  -- mapM_ putStrLn (times campeonato)           -- os 6 times
+  -- print (length campeonato)                   -- 15
+  
+  -- testes da Camada 3.2
+  print (linhaDoTime campeonato "TimeA")
+
+  
+  
+  
+  
+  
