@@ -62,25 +62,25 @@ jogosTeste =
 campeonato :: [Partida]
 campeonato =
   -- Rodada 1
-  [ Partida 1 "TimeA" 0 0 "TimeB"
+  [ Partida 1 "TimeA" 3 0 "TimeB"
   , Partida 1 "TimeC" 0 0 "TimeD"
-  , Partida 1 "TimeE" 0 0 "TimeF"
+  , Partida 1 "TimeE" 1 2 "TimeF"
   -- Rodada 2
-  , Partida 2 "TimeA" 0 0 "TimeC"
-  , Partida 2 "TimeB" 0 0 "TimeE"
-  , Partida 2 "TimeD" 0 0 "TimeF"
+  , Partida 2 "TimeA" 1 0 "TimeC"
+  , Partida 2 "TimeB" 3 3 "TimeE"
+  , Partida 2 "TimeD" 2 0 "TimeF"
   -- Rodada 3
-  , Partida 3 "TimeA" 0 0 "TimeD"
-  , Partida 3 "TimeB" 0 0 "TimeF"
-  , Partida 3 "TimeC" 0 0 "TimeE"
+  , Partida 3 "TimeA" 2 1 "TimeD"
+  , Partida 3 "TimeB" 3 1 "TimeF"
+  , Partida 3 "TimeC" 1 1 "TimeE"
   -- Rodada 4
-  , Partida 4 "TimeA" 0 0 "TimeE"
-  , Partida 4 "TimeB" 0 0 "TimeD"
+  , Partida 4 "TimeA" 2 2 "TimeE"
+  , Partida 4 "TimeB" 2 3 "TimeD"
   , Partida 4 "TimeC" 0 0 "TimeF"
   -- Rodada 5
-  , Partida 5 "TimeA" 0 0 "TimeF"
-  , Partida 5 "TimeB" 0 0 "TimeC"
-  , Partida 5 "TimeD" 0 0 "TimeE"
+  , Partida 5 "TimeA" 0 1 "TimeF"
+  , Partida 5 "TimeB" 0 2 "TimeC"
+  , Partida 5 "TimeD" 2 1 "TimeE"
   ]
 
 main :: IO ()
