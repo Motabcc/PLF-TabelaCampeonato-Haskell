@@ -26,7 +26,7 @@ data Linha = Linha
   } deriving (Show, Eq)
 
 
-participou :: Time -> Partida -> Boole
+participou :: Time -> Partida -> Bool
 participou t part = t == mandante part || t == visitante part
 
 resultadoDoPlacar :: Int -> Int -> Resultado
