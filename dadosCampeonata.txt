@@ -1,4 +1,4 @@
-import Data.List (nub, sort, foldl, sortOn)
+import Data.List (nub, sort, foldl, sortOn, find)
 
 -- camada 3.1 tipos
 
@@ -145,6 +145,12 @@ classificacao ps = reverse (sortOn chave linhas)
 ateRodada :: Int -> [Partida] -> [Partida] 
 ateRodada n ps = [p | p <- ps, rodada p <= n]
 
+maiorGoleada :: [Partida] -> Maybe Partida
+maiorGoleada [] = Nothing
+maiorGoleada ps = Just (last (sortOn diferenca ps))
+  where
+    diferenca p = abs (golsMandante p - golsVisitante p)
+
 main :: IO ()
 main = do
   -- testes da Camada 3.1
@@ -165,6 +171,7 @@ main = do
   print (aproveitamento (linhaDoTime campeonato "TimeA"))
   mapM_ print (classificacao campeonato)
   mapM_ print (ateRodada 2 campeonato)
+  print (maiorGoleada campeonato)
 
   
   
