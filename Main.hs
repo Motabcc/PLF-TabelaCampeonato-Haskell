@@ -360,3 +360,11 @@ dadosComErros = unlines
   ]
 
 
+--  Main 
+main :: IO ()
+main = do
+  hSetEncoding stdout utf8    
+  putStr (either (\e -> "Erro nos dados: " ++ descreverErro e ++ "\n")
+                 relatorio
+                 (lerCampeonato dadosCampeonato))
+  putStr (relatorioDeErros dadosComErros)
