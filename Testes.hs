@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -main-is Testes #-}
--- Testes do PjBL 2 (Seção 7)
+-- Testes do PjBL 2 
 -- Rodar da pasta raiz: runghc -i. tests/Testes.hs
 
 module Testes (main) where
@@ -8,7 +8,7 @@ import Main hiding (main)
 import System.IO (hSetEncoding, stdout, utf8)
 
 
--- função do enunciado
+-- função para testar enunciado
 testar :: (Eq a, Show a) => String -> a -> a -> IO ()
 testar nome obtido esperado
   | obtido == esperado = putStrLn ("OK      " ++ nome)
