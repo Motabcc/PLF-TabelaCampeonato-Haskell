@@ -135,3 +135,161 @@ mediaGols [] = Nothing
 mediaGols ps = Just (fromIntegral (sum (map totalGols ps)) / fromIntegral (length ps))
   where
     totalGols p = golsMandante p + golsVisitante p
+
+
+-- Camada 3, Leitura 
+
+
+-- cada erro leva o número da linha (ou a rodada)
+data Erro
+  = CamposInvalidos Int String
+  | NumeroInvalido Int String
+  | PlacarNegativo Int
+  | MesmoTime Int Time
+  | TimeRepetidoNaRodada Int Time
+  deriving (Show, Eq)
+
+-- separar ';' "1;A;2" == ["1","A","2"]
+separar :: Char -> String -> [String]
+separar sep = foldr passo [""]
+  where
+    passo c (atual : resto)
+      | c == sep  = "" : atual : resto
+      | otherwise = (c : atual) : resto
+    passo _ []    = []            -- nunca acontece, começa com [""]
+
+aparar :: String -> String
+aparar = dropWhileEnd isSpace . dropWhile isSpace
+
+paraEither :: e -> Maybe a -> Either e a
+paraEither e Nothing  = Left e
+paraEither _ (Just x) = Right x
+
+lerNumero :: Int -> String -> Either Erro Int
+lerNumero n s = paraEither (NumeroInvalido n s) (readMaybe s)
+
+validarPartida :: Int -> String -> Partida -> Either Erro Partida
+validarPartida n linha p
+  | null (mandante p) || null (visitante p)   = Left (CamposInvalidos n linha)
+  | rodada p < 1                              = Left (NumeroInvalido n (show (rodada p)))
+  | golsMandante p < 0 || golsVisitante p < 0 = Left (PlacarNegativo n)
+  | mandante p == visitante p                 = Left (MesmoTime n (mandante p))
+  | otherwise                                 = Right p
+
+lerPartida :: Int -> String -> Either Erro Partida
+lerPartida n linha = case map aparar (separar ';' linha) of
+  [r, m, gm, gv, v] -> do
+    rod <- lerNumero n r
+    gM  <- lerNumero n gm
+    gV  <- lerNumero n gv
+    validarPartida n linha (Partida rod m gM gV v)
+  _ -> Left (CamposInvalidos n linha)
+
+-- numera antes de filtrar para o número bater com o texto original
+linhasNumeradas :: String -> [(Int, String)]
+linhasNumeradas texto = filter (ehDado . snd) (zip [1 ..] (lines texto))
+  where
+    ehDado l = not (all isSpace l) && take 1 (aparar l) /= "#"
+
+aparicoes :: [Partida] -> [(Int, Time)]
+aparicoes ps = [ (rodada p, t) | p <- ps, t <- [mandante p, visitante p] ]
+
+repetidosNaRodada :: [Partida] -> [(Int, Time)]
+repetidosNaRodada ps = nub [ x | x <- todas, length (filter (== x) todas) > 1 ]
+  where
+    todas = aparicoes ps
+
+verificarRodadas :: [Partida] -> Either Erro [Partida]
+verificarRodadas ps = case repetidosNaRodada ps of
+  []           -> Right ps
+  ((r, t) : _) -> Left (TimeRepetidoNaRodada r t)
+
+-- para no primeiro erro
+lerCampeonato :: String -> Either Erro [Partida]
+lerCampeonato texto = do
+  ps <- traverse (uncurry lerPartida) (linhasNumeradas texto)
+  verificarRodadas ps
+
+-- junta os erros de todas as linhas
+todosOsErros :: String -> [Erro]
+todosOsErros texto =
+  lefts lidas ++ map (uncurry TimeRepetidoNaRodada) (repetidosNaRodada (rights lidas))
+  where
+    lidas = map (uncurry lerPartida) (linhasNumeradas texto)
+
+descreverErro :: Erro -> String
+descreverErro (CamposInvalidos n l) =
+  "linha " ++ show n ++ ": esperado rodada;mandante;gols;gols;visitante, veio " ++ entreAspas l
+descreverErro (NumeroInvalido n s) =
+  "linha " ++ show n ++ ": " ++ entreAspas s ++ " não é um número válido"
+descreverErro (PlacarNegativo n) =
+  "linha " ++ show n ++ ": placar negativo"
+descreverErro (MesmoTime n t) =
+  "linha " ++ show n ++ ": " ++ t ++ " não pode jogar contra ele mesmo"
+descreverErro (TimeRepetidoNaRodada r t) =
+  "rodada " ++ show r ++ ": " ++ t ++ " joga mais de uma vez"
+
+-- show "Paraná" sairia "Paran\225"
+entreAspas :: String -> String
+entreAspas s = "\"" ++ s ++ "\""
+
+mostrarPartida :: Partida -> String
+mostrarPartida p =
+  "rodada " ++ show (rodada p) ++ ", " ++ mandante p ++ " "
+  ++ show (golsMandante p) ++ " x " ++ show (golsVisitante p) ++ " " ++ visitante p
+
+alinharEsq :: Int -> String -> String
+alinharEsq n s = s ++ replicate (n - length s) ' '
+
+alinharDir :: Int -> String -> String
+alinharDir n s = replicate (n - length s) ' ' ++ s
+
+-- 66.666 vira "66,7"
+umaCasa :: Double -> String
+umaCasa x = show (d `div` 10) ++ "," ++ show (d `mod` 10)
+  where
+    d = round (x * 10) :: Int
+
+comSinal :: Int -> String
+comSinal n
+  | n > 0     = '+' : show n
+  | otherwise = show n
+
+tabelaFormatada :: [Linha] -> String
+tabelaFormatada ls =
+  unlines (cabecalho : [ formatarLinha i l | (i, l) <- zip [1 :: Int ..] ls ])
+  where
+    largura   = maximum (length "Time" : map (length . time) ls)
+    colunas   = concatMap (alinharDir 4)
+    cabecalho = alinharDir 2 "#" ++ "  " ++ alinharEsq largura "Time"
+                ++ colunas ["P", "J", "V", "E", "D", "GP", "GC", "SG"]
+                ++ alinharDir 8 "Aprov"
+    formatarLinha i l =
+      alinharDir 2 (show i) ++ "  " ++ alinharEsq largura (time l)
+      ++ colunas (map show [ pontosLinha l, jogos l, vitorias l, empates l
+                           , derrotas l, golsPro l, golsContra l ]
+                  ++ [comSinal (saldo l)])
+      ++ alinharDir 8 (umaCasa (aproveitamento l) ++ "%")
+
+relatorio :: [Partida] -> String
+relatorio ps = unlines
+  [ "=== Classificação final ==="
+  , tabelaFormatada (classificacao ps)
+  , "=== Classificação até a rodada 3 ==="
+  , tabelaFormatada (classificacao (ateRodada 3 ps))
+  , "=== Estatísticas ==="
+  , "Maior goleada: " ++ maybe "nenhuma partida" mostrarPartida (maiorGoleada ps)
+  , "Média de gols por partida: " ++ maybe "nenhuma partida" umaCasa (mediaGols ps)
+  ]
+
+relatorioDeErros :: String -> String
+relatorioDeErros texto = unlines
+  ( [ ""
+    , "=== Entrada com erros ==="
+    , "lerCampeonato (para no primeiro erro):"
+    , "  " ++ either descreverErro (const "nenhum erro") (lerCampeonato texto)
+    , "todosOsErros (todos os erros):"
+    ]
+    ++ map (("  - " ++) . descreverErro) (todosOsErros texto) )
+
+
