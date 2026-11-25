@@ -166,7 +166,12 @@ paraEither e Nothing  = Left e
 paraEither _ (Just x) = Right x
 
 lerNumero :: Int -> String -> Either Erro Int
-lerNumero n s = paraEither (NumeroInvalido n s) (readMaybe s)
+lerNumero n s = paraEither (NumeroInvalido n s) (readMaybe s >>= cabeEmInt)
+
+cabeEmInt :: Integer -> Maybe Int
+cabeEmInt x
+  | x < toInteger (minBound :: Int) || x > toInteger (maxBound :: Int) = Nothing
+  | otherwise = Just (fromInteger x)
 
 validarPartida :: Int -> String -> Partida -> Either Erro Partida
 validarPartida n linha p
