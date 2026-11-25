@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -main-is Testes #-}
 -- Testes do PjBL 2 
--- Rodar da pasta raiz: runghc -i. tests/Testes.hs
+-- Rodar na pasta do projeto: runghc Testes.hs
 
 module Testes (main) where
 
@@ -85,6 +85,7 @@ main = do
   testar "Erro CamposInvalidos (falta campo)" (lerPartida 7 "1;Paraná;0;0") (Left (CamposInvalidos 7 "1;Paraná;0;0"))
   testar "Erro CamposInvalidos (time vazio)"  (lerPartida 2 "1;;0;0;B") (Left (CamposInvalidos 2 "1;;0;0;B"))
   testar "Erro NumeroInvalido (placar dois)"  (lerPartida 4 "2;Operário;dois;0;Londrina") (Left (NumeroInvalido 4 "dois"))
+  testar "Erro NumeroInvalido (número gigante)" (lerPartida 1 "1;A;99999999999999999999;0;B") (Left (NumeroInvalido 1 "99999999999999999999"))
   testar "Erro PlacarNegativo"                (lerPartida 5 "2;Cascavel;-1;2;Paraná") (Left (PlacarNegativo 5))
   testar "Erro MesmoTime"                     (lerPartida 6 "2;Londrina;1;1;Londrina") (Left (MesmoTime 6 "Londrina"))
   testar "Erro TimeRepetidoNaRodada"
