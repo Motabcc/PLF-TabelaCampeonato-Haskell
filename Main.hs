@@ -293,3 +293,70 @@ relatorioDeErros texto = unlines
     ++ map (("  - " ++) . descreverErro) (todosOsErros texto) )
 
 
+--  campeonato de teste, Dados 
+
+-- 6 times, 5 rodadas
+-- 0 x 0: Paraná x Operário | goleada: Coritiba 3 x 0 Athletico
+-- empate em pontos: Coritiba e Operário (10), desempata no saldo
+
+dadosCampeonato :: String
+dadosCampeonato = unlines
+  [ "# rodada;mandante;gols mandante;gols visitante;visitante"
+  , "1;Coritiba;3;0;Athletico"
+  , "1;Paraná;0;0;Operário"
+  , "1;Londrina;1;2;Cascavel"
+  , ""
+  , "2;Coritiba;1;0;Paraná"
+  , "2;Athletico;3;3;Londrina"
+  , "2;Operário;2;0;Cascavel"
+  , ""
+  , "3;Coritiba;2;1;Operário"
+  , "3;Athletico;3;1;Cascavel"
+  , "3;Paraná;1;1;Londrina"
+  , ""
+  , "4;Coritiba;2;2;Londrina"
+  , "4;Athletico;2;3;Operário"
+  , "4;Paraná;0;0;Cascavel"
+  , ""
+  , "5;Coritiba;0;1;Cascavel"
+  , "5;Athletico;0;2;Paraná"
+  , "5;Operário;2;1;Londrina"
+  ]
+
+-- o mesmo campeonato em lista, para os testes
+campeonato :: [Partida]
+campeonato =
+  -- Rodada 1
+  [ Partida 1 "Coritiba"  3 0 "Athletico"
+  , Partida 1 "Paraná"    0 0 "Operário"
+  , Partida 1 "Londrina"  1 2 "Cascavel"
+  -- Rodada 2
+  , Partida 2 "Coritiba"  1 0 "Paraná"
+  , Partida 2 "Athletico" 3 3 "Londrina"
+  , Partida 2 "Operário"  2 0 "Cascavel"
+  -- Rodada 3
+  , Partida 3 "Coritiba"  2 1 "Operário"
+  , Partida 3 "Athletico" 3 1 "Cascavel"
+  , Partida 3 "Paraná"    1 1 "Londrina"
+  -- Rodada 4
+  , Partida 4 "Coritiba"  2 2 "Londrina"
+  , Partida 4 "Athletico" 2 3 "Operário"
+  , Partida 4 "Paraná"    0 0 "Cascavel"
+  -- Rodada 5
+  , Partida 5 "Coritiba"  0 1 "Cascavel"
+  , Partida 5 "Athletico" 0 2 "Paraná"
+  , Partida 5 "Operário"  2 1 "Londrina"
+  ]
+
+dadosComErros :: String
+dadosComErros = unlines
+  [ "# texto com erros"
+  , "1;Coritiba;2;1;Athletico"
+  , "1;Paraná;0;0"                -- CamposInvalidos
+  , "2;Operário;dois;0;Londrina"  -- NumeroInvalido
+  , "2;Cascavel;-1;2;Paraná"      -- PlacarNegativo
+  , "2;Londrina;1;1;Londrina"     -- MesmoTime
+  , "1;Coritiba;0;0;Operário"     -- TimeRepetidoNaRodada
+  ]
+
+
